@@ -1,0 +1,13 @@
+# ROVEN — Project log
+- 2025: brand created (ROVEN streetwear, "Built for real ones")
+- 2026-11-04: decisions: Arabic + English, cash on delivery + online payment, Supabase, React + Vite
+- 2026-11-04: v0.1 plain HTML hero + countdown
+- 2026-11-04: v0.2 moved to React + Vite: product pages, cart, checkout, Supabase schema with RLS and server-priced create_order. Not yet run with npm (no network in the build environment).
+- 2026-11-04: v0.3 admin dashboard at #/admin: Supabase Auth sign-in, admins-table check, overview, orders with status, products CRUD with photo upload (storage bucket + RLS). Product photos show on the product page. Not yet run with npm.
+- 2026-11-04: v0.4 settings (drop date, shipping), per-size stock with restore on cancel, discount codes, order tracking, server-side quote_order. Not yet run with npm. Still open: payment gateway, notifications, customer accounts.
+- 2026-11-04: v0.5 manual transfer payment (InstaPay/wallet/bank) with receipt upload and admin receipt viewing, transfer details editable in Settings. Online gateway postponed: no commercial register or tax card yet. Not yet run with npm.
+- 2026-11-04: v0.6 Telegram order and receipt alerts (notify-order Edge Function + database webhook), Cloudinary product photos via admin-only signed upload (cloudinary-sign), optimized delivery with f_auto,q_auto. Receipts stay in private Supabase bucket. Not yet run with npm or deployed.
+- 2026-11-04: v0.7 turned the single landing page into a real storefront: home sections (hero, ticker, featured grid, brand line, countdown), Shop page with category filter, product page with gallery and details, footer with socials. Product categories, descriptions, featured flag and social links editable in the dashboard. Not yet run with npm.
+- 2026-11-04: v0.7.1 fix: page showed unstyled in npm run dev because the strict CSP blocked Vite's inline dev styles. CSP now added only in the production build (vite.config.js).
+- 2026-11-04: v0.8 UI overhaul after feedback that the UI lacked basics: announcement bar, 3-zone sticky header + mobile drawer, collections tiles, featured grid with hover second photo, lookbook, trust row, reviews (dashboard-managed), About/Size guide/FAQ pages (content from settings), multi-column footer, full CSS rewrite with tokens, angled-corner buttons, RTL-safe logical properties. Release countdown now optional and hidden by default. Not yet run with npm.
+- 2026-11-04: v0.9 new transparent logo, identity YOUR DIFFERENCE. YOUR POWER., glass cut-corner header, EN|ع switch, removed ticker, atmosphere (glows, grain, light silver band, scroll reveal), categories and collections managed from dashboard (tables, tabs, product pickers, collection pages). Not yet run with npm.
