@@ -1,51 +1,51 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { uploadImage } from '../lib/cloudinary.js';
-/* One editor for both categories and collections. `rich` adds the description and the "show on home" switch (collections). */
+import { Modal, Confirm, Field, Check, Pill, Empty, PageHead } from './ui.jsx';
+/* One editor for categories and collections. `rich` adds descriptions and the "show on home" switch (collections). */
 const EMPTY = { slug: '', name_en: '', name_ar: '', description_en: '', description_ar: '', image: '', sort: 0, active: true, on_home: true };
 
-export default function Taxonomy({ table, title, rich }) {
-  const [items, setItems] = useState([]), [f, setF] = useState(EMPTY), [editing, setEditing] = useState(false), [msg, setMsg] = useState('');
+export default function Taxonomy({ table, title, one, rich, notify }) {
+  const [items, setItems] = useState([]), [f, setF] = useState(null), [isNew, setIsNew] = useState(false), [err, setErr] = useState(''), [busy, setBusy] = useState(false), [ask, setAsk] = useState(false);
   const load = useCallback(async () => { const { data } = await supabase.from(table).select('*').order('sort'); setItems(data || []); }, [table]);
-  useEffect(() => { setF(EMPTY); setEditing(false); load(); }, [load]);
+  useEffect(() => { load(); }, [load]);
   const set = k => e => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
   const pick = async e => {
-    const file = e.target.files[0]; if (!file) return; setMsg('Uploading…');
-    const url = await uploadImage(file); if (!url) return setMsg('Upload failed. Use a JPG, PNG or WebP under 3 MB.');
-    setF(x => ({ ...x, image: url })); setMsg('');
+    const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+    setBusy(true); const url = await uploadImage(file); setBusy(false);
+    if (!url) return setErr('فشل رفع الصورة. استخدم JPG أو PNG أو WebP أقل من 3 ميجا.');
+    setErr(''); setF(x => ({ ...x, image: url }));
   };
-  const save = async e => {
-    e.preventDefault();
+  const save = async () => {
     const slug = f.slug.trim().toLowerCase();
-    if (!/^[a-z0-9-]{2,30}$/.test(slug)) return setMsg('Link name: 2 to 30 letters, numbers or dashes.');
-    if (!f.name_en.trim() || !f.name_ar.trim()) return setMsg('Fill both names.');
+    if (!/^[a-z0-9-]{2,30}$/.test(slug)) return setErr('الرابط: من ٢ إلى ٣٠ حرف إنجليزي أو رقم أو شرطة.');
+    if (!f.name_en.trim() || !f.name_ar.trim()) return setErr('اكتب الاسمين بالعربي والإنجليزي.');
     const row = { slug, name_en: f.name_en.trim().slice(0, 60), name_ar: f.name_ar.trim().slice(0, 60), image: f.image || null, sort: parseInt(f.sort, 10) || 0, active: f.active };
     if (rich) Object.assign(row, { description_en: f.description_en.trim().slice(0, 300), description_ar: f.description_ar.trim().slice(0, 300), on_home: f.on_home });
-    const { error } = await supabase.from(table).upsert(row);
-    if (error) return setMsg('Could not save.');
-    setMsg('Saved.'); setF(EMPTY); setEditing(false); load();
+    setBusy(true); const { error } = await supabase.from(table).upsert(row); setBusy(false);
+    if (error) return setErr('تعذر الحفظ.'); notify('تم الحفظ.'); setF(null); load();
   };
-  const del = async s => { if (!window.confirm('Delete this? Products keep working but lose the link to it.')) return; await supabase.from(table).delete().eq('slug', s); load(); };
-  return (<><h2>{title}</h2>
-    <div className="ad-list">{!items.length && <p className="ad-dim">Nothing here yet.</p>}{items.map(c => (
-      <div className="ad-prod" key={c.slug}>{c.image ? <img src={c.image} alt="" /> : <span className="ph" />}
-        <strong>{c.name_en} · {c.name_ar}</strong><small>{c.active ? 'Live' : 'Hidden'}</small>
-        <button className="ad-btn" onClick={() => { setF({ ...EMPTY, ...c, image: c.image || '' }); setEditing(true); setMsg(''); }}>Edit</button>
-        <button className="ad-btn" onClick={() => del(c.slug)}>Delete</button></div>))}</div>
-    <h2>{editing ? 'Edit' : 'Add'}</h2>
-    <form className="ad-form" onSubmit={save}>
-      <label>Link name (letters, numbers, dashes. Cannot change later)<input value={f.slug} onChange={set('slug')} disabled={editing} maxLength={30} /></label>
-      <label>Name (English)<input value={f.name_en} onChange={set('name_en')} maxLength={60} /></label>
-      <label>Name (Arabic)<input value={f.name_ar} onChange={set('name_ar')} maxLength={60} dir="rtl" /></label>
-      {rich && <><label>Description (English)<textarea rows={2} maxLength={300} value={f.description_en} onChange={set('description_en')} /></label>
-        <label>Description (Arabic)<textarea rows={2} maxLength={300} dir="rtl" value={f.description_ar} onChange={set('description_ar')} /></label>
-        <label className="chk"><input type="checkbox" checked={f.on_home} onChange={set('on_home')} /> Show on the home page</label></>}
-      <label>Cover photo<input type="file" accept="image/jpeg,image/png,image/webp" onChange={pick} /></label>
-      {f.image && <div className="ad-thumbs"><span><img src={f.image} alt="" /><button type="button" onClick={() => setF({ ...f, image: '' })}>×</button></span></div>}
-      <label>Order in the list<input type="number" value={f.sort} onChange={set('sort')} /></label>
-      <label className="chk"><input type="checkbox" checked={f.active} onChange={set('active')} /> Visible in the store</label>
-      {msg && <p className={msg === 'Saved.' ? 'ad-dim' : 'ad-err'} role="status">{msg}</p>}
-      <div className="ad-row"><button className="ad-btn primary" type="submit">Save</button>
-        {editing && <button className="ad-btn" type="button" onClick={() => { setF(EMPTY); setEditing(false); }}>Cancel</button>}</div>
-    </form></>);
+  const remove = async () => { await supabase.from(table).delete().eq('slug', f.slug); setAsk(false); notify('تم الحذف.'); setF(null); load(); };
+  return (<>
+    <PageHead title={title} sub={`${items.length} عنصر`} action={<button className="ad-btn primary" onClick={() => { setF(EMPTY); setIsNew(true); setErr(''); }}>+ {one} جديد</button>} />
+    {!items.length ? <Empty>لا يوجد شيء هنا بعد.</Empty> : <div className="ad-grid">{items.map(c => (
+      <button key={c.slug} className="ad-pcard" onClick={() => { setF({ ...EMPTY, ...c, image: c.image || '' }); setIsNew(false); setErr(''); }}>
+        <div className="ad-pimg">{c.image ? <img src={c.image} alt="" loading="lazy" /> : <span>لا صورة</span>}</div>
+        <b>{c.name_ar}</b><span className="ad-dim" dir="ltr">{c.name_en}</span><Pill tone={c.active ? 'green' : 'gray'}>{c.active ? 'ظاهر' : 'مخفي'}</Pill></button>))}</div>}
+    {f && <Modal title={isNew ? `${one} جديد` : `تعديل ${one}`} onClose={() => setF(null)} footer={<>
+      {!isNew && <button className="ad-btn danger ad-start" onClick={() => setAsk(true)}>حذف</button>}
+      <button className="ad-btn" onClick={() => setF(null)}>إلغاء</button><button className="ad-btn primary" disabled={busy} onClick={save}>{busy ? 'جاري…' : 'حفظ'}</button></>}>
+      <div className="ad-two"><Field label="الاسم بالعربي"><input value={f.name_ar} onChange={set('name_ar')} maxLength={60} /></Field>
+        <Field label="الاسم بالإنجليزي"><input value={f.name_en} onChange={set('name_en')} maxLength={60} dir="ltr" /></Field></div>
+      <Field label="الرابط" hint="حروف إنجليزية وأرقام وشرطات. لا يمكن تغييره بعد الحفظ."><input value={f.slug} onChange={set('slug')} disabled={!isNew} maxLength={30} dir="ltr" /></Field>
+      {rich && <div className="ad-two"><Field label="الوصف بالعربي"><textarea rows={3} maxLength={300} value={f.description_ar} onChange={set('description_ar')} /></Field>
+        <Field label="الوصف بالإنجليزي"><textarea rows={3} maxLength={300} value={f.description_en} onChange={set('description_en')} dir="ltr" /></Field></div>}
+      <Field label="صورة الغلاف"><input type="file" accept="image/jpeg,image/png,image/webp" onChange={pick} disabled={busy} /></Field>
+      {f.image && <div className="ad-thumbs"><span><img src={f.image} alt="" /><button type="button" onClick={() => setF({ ...f, image: '' })} aria-label="حذف الصورة">×</button></span></div>}
+      <Field label="الترتيب"><input type="number" value={f.sort} onChange={set('sort')} /></Field>
+      <div className="ad-checks"><Check label="ظاهر في المتجر" checked={f.active} onChange={set('active')} />{rich && <Check label="يظهر في الصفحة الرئيسية" checked={f.on_home} onChange={set('on_home')} />}</div>
+      {err && <p className="ad-err" role="alert">{err}</p>}
+    </Modal>}
+    {ask && <Confirm text="هل تريد الحذف؟ المنتجات ستبقى لكنها تفقد الارتباط بهذا العنصر." onNo={() => setAsk(false)} onYes={remove} />}
+  </>);
 }

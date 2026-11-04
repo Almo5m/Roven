@@ -39,6 +39,9 @@ Top announcement bar, sticky header with a mobile menu, collections, featured pi
 ## Identity and catalog (run `supabase/07_catalog.sql`)
 Identity line: YOUR DIFFERENCE. YOUR POWER. The logo is the transparent version (`public/logo-r.png`). The header is glass with cut corners like the logo, and the language switch is a small EN | ع toggle. Categories and collections are created, edited, ordered and hidden from the dashboard (Categories and Collections tabs), and each product picks its category and collections. I removed the scrolling ticker.
 
+## Dashboard (Arabic only)
+The dashboard is Arabic and right-to-left, organised in a side menu (sales, catalog, site). Adding and editing happens in pop-up windows (on phones they slide up as sheets), and it works on phones, tablets and desktops.
+
 ## Next
 Online payment gateway once registered, order notifications (email or WhatsApp), security review, launch.
 

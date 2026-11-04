@@ -10,3 +10,4 @@
 - Empty sections: a store with no photos or reviews looks broken or fake. Lookbook, reviews, FAQ and size chart stay hidden or show a 'coming soon' note until real content is added in the dashboard, and no placeholder measurements or reviews are invented.
 - Glass with cut corners: backdrop-filter must sit on the same element as the clip-path (a clipped parent becomes a backdrop root and blurs nothing). The 1px border follows the diagonal cuts by clipping a gradient pseudo-element with an even-odd polygon (outer shape minus inner shape).
 - Flat dark look: pure black with grey text felt lifeless. Fixed with cool ambient glows, fine grain, a light silver band for contrast, scroll reveals and a pulsing glow behind the logo.
+- Dashboard styles leaking: the storefront has global input and class styles, so every dashboard class is prefixed ad- and form controls are re-styled inside .ad-root. Checkboxes need an explicit size because the global input rule is width:100%.

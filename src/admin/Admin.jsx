@@ -3,16 +3,27 @@ import { supabase } from '../lib/supabase.js';
 import Dashboard from './Dashboard.jsx';
 import Orders from './Orders.jsx';
 import Products from './Products.jsx';
-import Coupons from './Coupons.jsx';
-import Settings from './Settings.jsx';
-import Reviews from './Reviews.jsx';
 import Taxonomy from './Taxonomy.jsx';
+import Coupons from './Coupons.jsx';
+import Reviews from './Reviews.jsx';
+import Settings from './Settings.jsx';
+import { Icon } from './ui.jsx';
 import './admin.css';
 
-/* The UI gate is only for convenience. Real protection is Row Level Security in Supabase. */
+const NAV = [
+  ['المبيعات', [['dash', 'نظرة عامة', 'home'], ['orders', 'الطلبات', 'orders'], ['coupons', 'أكواد الخصم', 'coupons']]],
+  ['الكتالوج', [['products', 'المنتجات', 'products'], ['categories', 'الأصناف', 'categories'], ['collections', 'الكوليكشنات', 'collections']]],
+  ['الموقع', [['reviews', 'آراء العملاء', 'reviews'], ['settings', 'الإعدادات', 'settings']]],
+];
+const TITLES = Object.fromEntries(NAV.flatMap(([, items]) => items.map(([k, l]) => [k, l])));
+
+/* The screen gate is only for convenience. Real protection is Row Level Security in Supabase. */
 export default function Admin() {
   const [state, setState] = useState('loading'), [tab, setTab] = useState('dash'), [orders, setOrders] = useState([]);
+  const [nav, setNav] = useState(false), [toast, setToast] = useState(null);
   const [email, setEmail] = useState(''), [pass, setPass] = useState(''), [err, setErr] = useState('');
+  const notify = useCallback((msg, type = 'ok') => setToast({ msg, type, id: Date.now() }), []);
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 3200); return () => clearTimeout(t); }, [toast]);
 
   const check = useCallback(async () => {
     if (!supabase) return setState('nosb');
@@ -26,41 +37,52 @@ export default function Admin() {
     setOrders(data || []);
   }, []);
   useEffect(() => { check(); }, [check]);
-  useEffect(() => { if (state === 'ok') loadOrders(); }, [state, loadOrders]);
+  useEffect(() => { if (state !== 'ok') return; loadOrders(); const i = setInterval(loadOrders, 60000); return () => clearInterval(i); }, [state, loadOrders]);
 
   const login = async e => {
     e.preventDefault(); setErr('');
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pass });
-    setPass(''); if (error) return setErr('Wrong email or password.'); check();
+    setPass(''); if (error) return setErr('الإيميل أو كلمة المرور غير صحيحة.'); check();
   };
   const logout = async () => { await supabase.auth.signOut(); setState('login'); };
+  const go = k => { setTab(k); setNav(false); scrollTo(0, 0); };
 
-  if (state === 'loading') return <div className="ad-center">Loading…</div>;
-  if (state === 'nosb') return <div className="ad-center">Add your Supabase keys to .env to use the dashboard.</div>;
-  if (state === 'denied') return <div className="ad-center"><p>This account is not an admin.</p><button className="ad-btn" onClick={logout}>Sign out</button></div>;
-  if (state === 'login') return (
+  const shell = c => <div className="ad-root" dir="rtl" lang="ar">{c}</div>;
+  if (state === 'loading') return shell(<div className="ad-center">جاري التحميل…</div>);
+  if (state === 'nosb') return shell(<div className="ad-center">أضف مفاتيح Supabase في ملف .env لتشغيل لوحة التحكم.</div>);
+  if (state === 'denied') return shell(<div className="ad-center"><p>هذا الحساب ليس مدير.</p><button className="ad-btn" onClick={logout}>تسجيل الخروج</button></div>);
+  if (state === 'login') return shell(
     <form className="ad-center ad-login" onSubmit={login}>
-      <img src="/logo-r.png" alt="" width="72" />
-      <h1>ROVEN dashboard</h1>
-      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
-      <input type="password" placeholder="Password" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" required />
+      <img src="/logo-r.png" alt="" width="96" /><h1>لوحة تحكم ROVEN</h1>
+      <input type="email" placeholder="الإيميل" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
+      <input type="password" placeholder="كلمة المرور" value={pass} onChange={e => setPass(e.target.value)} autoComplete="current-password" required />
       {err && <p className="ad-err" role="alert">{err}</p>}
-      <button className="ad-btn primary" type="submit">Sign in</button>
+      <button className="ad-btn primary wide" type="submit">دخول</button>
     </form>);
 
-  const tabs = [['dash', 'Overview'], ['orders', 'Orders'], ['products', 'Products'], ['categories', 'Categories'], ['collections', 'Collections'], ['coupons', 'Coupons'], ['reviews', 'Reviews'], ['settings', 'Settings']];
-  return (<div className="ad">
-    <header className="ad-top"><strong>ROVEN</strong>
-      <nav>{tabs.map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}</nav>
-      <button className="ad-btn" onClick={logout}>Sign out</button></header>
-    <div className="ad-body">
-      {tab === 'dash' && <Dashboard orders={orders} />}
-      {tab === 'orders' && <Orders orders={orders} reload={loadOrders} />}
-      {tab === 'products' && <Products />}
-      {tab === 'categories' && <Taxonomy table="categories" title="Categories" />}
-      {tab === 'collections' && <Taxonomy table="collections" title="Collections" rich />}
-      {tab === 'coupons' && <Coupons />}
-      {tab === 'reviews' && <Reviews />}
-      {tab === 'settings' && <Settings />}
-    </div></div>);
+  const fresh = orders.filter(o => o.status === 'new').length;
+  return shell(<>
+    <aside className={'ad-side' + (nav ? ' open' : '')}>
+      <div className="ad-brand"><img src="/logo-r.png" alt="" /><b>ROVEN</b></div>
+      <nav>{NAV.map(([g, items]) => (<div key={g}><h4>{g}</h4>
+        {items.map(([k, l, ic]) => (<button key={k} className={tab === k ? 'on' : ''} onClick={() => go(k)}><Icon n={ic} />{l}
+          {k === 'orders' && fresh > 0 && <i>{fresh}</i>}</button>))}</div>))}</nav>
+      <button className="ad-out" onClick={logout}><Icon n="out" />تسجيل الخروج</button>
+    </aside>
+    {nav && <div className="ad-scrim" onClick={() => setNav(false)} />}
+    <div className="ad-main">
+      <div className="ad-top"><button className="ad-icon" onClick={() => setNav(true)} aria-label="القائمة"><Icon n="menu" size={24} /></button><strong>{TITLES[tab]}</strong><span /></div>
+      <div className="ad-body">
+        {tab === 'dash' && <Dashboard orders={orders} go={go} />}
+        {tab === 'orders' && <Orders orders={orders} reload={loadOrders} notify={notify} />}
+        {tab === 'coupons' && <Coupons notify={notify} />}
+        {tab === 'products' && <Products notify={notify} />}
+        {tab === 'categories' && <Taxonomy key="c" table="categories" title="الأصناف" one="صنف" notify={notify} />}
+        {tab === 'collections' && <Taxonomy key="k" table="collections" title="الكوليكشنات" one="كوليكشن" rich notify={notify} />}
+        {tab === 'reviews' && <Reviews notify={notify} />}
+        {tab === 'settings' && <Settings notify={notify} />}
+      </div>
+    </div>
+    {toast && <div key={toast.id} className={'ad-toast ' + toast.type} role="status">{toast.msg}</div>}
+  </>);
 }
