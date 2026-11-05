@@ -8,6 +8,20 @@ export default function Home({ t, lang, products, catalog, settings, testimonial
   const ref = useRef(null), [now, setNow] = useState(Date.now());
   const DROP = settings.drop_date ? new Date(settings.drop_date).getTime() : 0, showDrop = DROP > now;
   useEffect(() => { if (!DROP) return; const i = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(i); }, [DROP]);
+  /* Phones have no hover, so the light drifts on its own and follows the scroll. */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !matchMedia('(hover: none)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let seen = true, raf; const t0 = performance.now();
+    const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; }); io.observe(el);
+    const loop = now => {
+      if (seen) { const t = (now - t0) / 1000, sy = scrollY * 0.003;
+        el.style.setProperty('--x', 50 + 38 * Math.sin(t * 0.9 + sy) + '%'); el.style.setProperty('--y', 50 + 30 * Math.cos(t * 0.7 + sy * 1.3) + '%'); }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); io.disconnect(); };
+  }, []);
   const light = e => { const r = ref.current.getBoundingClientRect();
     ref.current.style.setProperty('--x', (e.clientX - r.left) / r.width * 100 + '%');
     ref.current.style.setProperty('--y', (e.clientY - r.top) / r.height * 100 + '%'); };
@@ -25,7 +39,7 @@ export default function Home({ t, lang, products, catalog, settings, testimonial
       <div className="hero-copy">
         <h1><span className="l1">{t.tag1}</span><span className="l2">{t.tag2}</span></h1>
         <p className="sub">{t.heroSub}</p>
-        <div className="btnrow"><a className="btn primary" href="#/shop">{t.shopNow}</a>{look.length > 0 && <a className="btn ghost" href="#lookbook">{t.lookbookCta}</a>}</div>
+        <div className="btnrow"><a className="btn primary" href="#/shop">{t.shopNow}</a>{look.length > 0 && <button className="btn ghost" onClick={() => document.getElementById('lookbook')?.scrollIntoView({ behavior: 'smooth' })}>{t.lookbookCta}</button>}</div>
       </div>
       <div className="mark" ref={ref} onPointerMove={light} onPointerDown={light}>
         <img className="mark-base" src="/logo-r.png" alt="ROVEN" /><img className="mark-lit" src="/logo-r.png" alt="" aria-hidden="true" /></div>

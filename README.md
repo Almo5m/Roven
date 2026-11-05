@@ -42,6 +42,9 @@ Identity line: YOUR DIFFERENCE. YOUR POWER. The logo is the transparent version 
 ## Dashboard (Arabic only)
 The dashboard is Arabic and right-to-left, organised in a side menu (sales, catalog, site). Adding and editing happens in pop-up windows (on phones they slide up as sheets), and it works on phones, tablets and desktops.
 
+## Phones and deploy
+The layout is tuned for phones: compact header, two-column product grid, swipeable product photos (no hover on touch), and the logo light moves on its own and follows the scroll. Deploy steps and the two Vercel environment variables are in `docs/DEPLOY-vercel.md`. `vercel.json` adds security headers.
+
 ## Next
 Online payment gateway once registered, order notifications (email or WhatsApp), security review, launch.
 
