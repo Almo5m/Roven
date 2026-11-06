@@ -1,9 +1,11 @@
+import { useTo } from '../lib/router.js';
 import Card from '../components/Card.jsx';
 import { opt } from '../lib/cloudinary.js';
 import { nm } from '../lib/catalog.js';
 export default function Collection({ t, lang, products, catalog, id }) {
+  const to = useTo();
   const c = catalog.collections.find(x => x.slug === id);
-  if (!c) return <section className="wrap narrow"><a href="#/shop">{t.back}</a></section>;
+  if (!c) return <section className="wrap narrow"><a href={to('/shop')}>{t.back}</a></section>;
   const list = products.filter(p => (p.collections || []).includes(id));
   return (<>
     <section className="chero">{c.image && <img src={opt(c.image, 1600)} alt="" />}

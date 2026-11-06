@@ -118,3 +118,19 @@ border-radius:8px;font:600 .95rem 'Readex Pro',sans-serif;cursor:pointer;text-de
 @keyframes ad-sheet{from{transform:translateY(100%)}}
 @media(min-width:1000px) and (max-width:1180px){.ad-body{padding-inline:22px}}
 @media (prefers-reduced-motion:reduce){.ad-root *{animation:none!important;transition:none!important}}
+
+/* flexible fields: tags, repeaters, tables */
+.ad-tags{display:flex;flex-direction:column;gap:10px}
+.ad-taglist{display:flex;flex-wrap:wrap;gap:8px}
+.ad-taglist span{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;border-radius:18px;padding:6px 8px 6px 14px;font-weight:600;font-size:.9rem}
+.ad-taglist button{width:22px;height:22px;border-radius:11px;border:0;background:rgba(0,0,0,.12);color:#000;cursor:pointer;line-height:1}
+.ad-tagadd{display:flex;gap:8px}.ad-tagadd input{flex:1}
+.ad-sugg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ad-sugg button{min-height:36px;padding:4px 14px;border-radius:18px;border:1px dashed var(--line-2);background:none;color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer}.ad-sugg button:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+.ad-stockgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.ad-rep{display:flex;flex-direction:column;gap:14px}
+.ad-repitem{border:1px solid var(--line-2);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--panel-2)}
+.ad-scrollx{overflow-x:auto}.ad-ed{border-collapse:separate;border-spacing:8px;min-width:100%}.ad-ed th,.ad-ed td{vertical-align:top;min-width:130px}.ad-ed th{display:flex;flex-direction:column;gap:6px}
+.ad-link{background:none;border:0;color:#ff9a9a;font:inherit;font-size:.82rem;cursor:pointer;text-decoration:underline;padding:6px 0}
+.ad-review{border:1px solid var(--line-2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2)}
+.ad-panel h3{margin-top:4px}

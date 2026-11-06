@@ -19,13 +19,13 @@ Without the .env it runs on three demo products, so you can look around first.
 Run `supabase/schema.sql` in the SQL editor. Customers can't write to the orders table directly: they go through `create_order`, which calculates the total on the server. Add yourself to the `admins` table to get dashboard access later.
 
 ## Dashboard
-Open `/#/admin`. Sign in with a Supabase Auth user that is listed in the `admins` table (the steps are in `supabase/02_admin.sql`, run it after `schema.sql`). You get an overview, orders with status changes, and products with photo upload. All of it is protected by Row Level Security, not just by the screen.
+Open `/admin`. Sign in with a Supabase Auth user that is listed in the `admins` table (the steps are in `supabase/02_admin.sql`, run it after `schema.sql`). You get an overview, orders with status changes, and products with photo upload. All of it is protected by Row Level Security, not just by the screen.
 
 ## Extras (run `supabase/03_extras.sql` after the other two)
-Drop date, shipping fee and free-shipping threshold are editable in the dashboard (Settings). Stock per size (sold-out sizes get disabled, cancelling an order puts the stock back), discount codes, and order tracking with the order code plus the phone number at `/#/track`.
+Drop date, shipping fee and free-shipping threshold are editable in the dashboard (Settings). Stock per size (sold-out sizes get disabled, cancelling an order puts the stock back), discount codes, and order tracking with the order code plus the phone number at `/track`.
 
 ## Manual transfer payment (run `supabase/04_transfer.sql`)
-Until I have a commercial register and tax card for a real gateway, customers can pay by transfer (InstaPay, wallet or bank). They see my transfer details (edited in Dashboard > Settings), get an order code, then upload the receipt at `/#/track`. I check the receipt in the Orders tab and move the order to confirmed. Receipts are in a private bucket that only admins can read.
+Until I have a commercial register and tax card for a real gateway, customers can pay by transfer (InstaPay, wallet or bank). They see my transfer details (edited in Dashboard > Settings), get an order code, then upload the receipt at `/track`. I check the receipt in the Orders tab and move the order to confirmed. Receipts are in a private bucket that only admins can read.
 
 ## Telegram alerts and Cloudinary photos
 New orders and uploaded receipts message me on Telegram (free, unlike WhatsApp Business). Product photos go to Cloudinary through a signed upload. Both run in Supabase Edge Functions, so no secret is in the browser. Steps: `docs/SETUP-telegram-and-cloudinary.md`.
@@ -44,6 +44,12 @@ The dashboard is Arabic and right-to-left, organised in a side menu (sales, cata
 
 ## Phones and deploy
 The layout is tuned for phones: compact header, two-column product grid, swipeable product photos (no hover on touch), and the logo light moves on its own and follows the scroll. Deploy steps and the two Vercel environment variables are in `docs/DEPLOY-vercel.md`. `vercel.json` adds security headers.
+
+## Easy fields and verified reviews (run `supabase/08_reviews_flex.sql`)
+Sizes and colours are tag lists, stock is one box per size, the FAQ is a list of question and answer cards, the size chart is an editable table, and transfer methods are picked from a list. Link names are generated automatically. Reviews come only from a link sent on WhatsApp from an order (the link belongs to that one order and works once it is shipped or delivered), they arrive as pending, and I approve them in the dashboard.
+
+## Search and sharing
+Clean URLs (`/shop`, `/p/...`, Arabic under `/ar`), per-page titles and descriptions, the ROVEN social preview image, structured data, a live sitemap and robots file. Steps for Google Search Console are in `docs/SEO.md`.
 
 ## Next
 Online payment gateway once registered, order notifications (email or WhatsApp), security review, launch.

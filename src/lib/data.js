@@ -3,7 +3,7 @@ export const DEMO = [
  {id:'hoodie',name_en:'Hoodie',name_ar:'هودي',price:0,sizes:['S','M','L','XL'],colors:['Black','Silver'],category:'hoodie',featured:true},
  {id:'sweatpants',name_en:'Sweatpants',name_ar:'سويت بانتس',price:0,sizes:['S','M','L','XL'],colors:['Black'],category:'sweatpants',featured:true},
  {id:'sweatshirt',name_en:'Sweatshirt',name_ar:'سويت شيرت',price:0,sizes:['S','M','L','XL'],colors:['Black','Silver'],category:'sweatshirt',featured:true}];
-const FALLBACK = { drop_date: '', announcement_en: '', announcement_ar: '', about_en: '', about_ar: '', faq_en: '', faq_ar: '', size_chart: '', lookbook: [], shipping_fee: 60, free_shipping_over: 0, transfer_info: '', instagram: '', tiktok: '' };
+const FALLBACK = { drop_date: '', faq: [], transfer_methods: [], announcement_en: '', announcement_ar: '', about_en: '', about_ar: '', faq_en: '', faq_ar: '', size_chart: '', lookbook: [], shipping_fee: 60, free_shipping_over: 0, transfer_info: '', instagram: '', tiktok: '' };
 const toItems = cart => cart.map(l => ({ product_id: l.id, size: l.size, color: l.color }));
 
 export async function loadProducts() {
@@ -50,7 +50,7 @@ export async function uploadReceipt(code, phone, file) {
 
 export async function loadTestimonials() {
   if (!supabase) return [];
-  const { data } = await supabase.from('testimonials').select('id,name,rating,text').eq('active', true).order('created_at', { ascending: false }).limit(6);
+  const { data } = await supabase.from('testimonials').select('id,name,rating,text,verified').eq('status', 'approved').order('created_at', { ascending: false }).limit(6);
   return data || [];
 }
 
@@ -59,4 +59,16 @@ export async function loadCatalog() {
   const [c, k] = await Promise.all([supabase.from('categories').select('*').eq('active', true).order('sort'),
     supabase.from('collections').select('*').eq('active', true).order('sort')]);
   return { categories: c.data || [], collections: k.data || [] };
+}
+
+/* Review links: the token belongs to one order, the server checks it. */
+export async function reviewRequest(token) {
+  if (!supabase) return null;
+  const { data } = await supabase.rpc('get_review_request', { p_token: token });
+  return data || null;
+}
+export async function submitReview(token, rating, text, name) {
+  if (!supabase) return false;
+  const { data } = await supabase.rpc('submit_review', { p_token: token, p_rating: rating, p_text: text, p_name: name });
+  return data === true;
 }

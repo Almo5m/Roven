@@ -6,7 +6,7 @@
 2. Go to Deployments > the latest one > Redeploy. The variables are baked in at build time, so changing them without redeploying does nothing.
 3. Build settings: Framework Preset Vite, build command `npm run build`, output directory `dist`.
 4. Supabase > Authentication > URL Configuration: set Site URL to your Vercel address.
-5. Open `https://YOUR-SITE.vercel.app/#/admin`.
+5. Open `https://YOUR-SITE.vercel.app/admin`.
 
 Never add the `service_role` key or any Edge Function secret (Telegram, Cloudinary) to Vercel. Those stay in Supabase secrets.
 
@@ -15,3 +15,6 @@ Open the site on a computer, press F12, choose the device toolbar (phone icon), 
 ```js
 [...document.querySelectorAll('*')].filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+1||r.left<-1}).slice(0,10).map(e=>e.tagName+'.'+e.className)
 ```
+
+## Also set
+`VITE_SITE_URL` (your final address) and, after you add the site to Google Search Console, `VITE_GOOGLE_VERIFICATION`. Details in `docs/SEO.md`. The admin address is `https://YOUR-SITE/admin`.

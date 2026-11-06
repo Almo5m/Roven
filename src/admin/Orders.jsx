@@ -4,6 +4,8 @@ import { Modal, Pill, PageHead, Empty, money, fmtDate } from './ui.jsx';
 export const ST = { new: ['جديد', 'blue'], awaiting_payment: ['في انتظار الدفع', 'amber'], confirmed: ['مؤكد', 'green'], shipped: ['تم الشحن', 'violet'], delivered: ['تم التسليم', 'gray'], cancelled: ['ملغي', 'red'] };
 const ME = { cod: 'كاش عند الاستلام', transfer: 'تحويل', online: 'أونلاين' };
 
+const waNumber = p => { const d = String(p).replace(/\D/g, ''); return d.startsWith('20') ? d : d.startsWith('0') ? '20' + d.slice(1) : d; };
+
 export default function Orders({ orders, reload, notify }) {
   const [filter, setFilter] = useState('all'), [sel, setSel] = useState(null), [status, setStatus] = useState(''), [busy, setBusy] = useState(false);
   const shown = filter === 'all' ? orders : orders.filter(o => o.status === filter);
@@ -13,6 +15,9 @@ export default function Orders({ orders, reload, notify }) {
     if (error) return notify('تعذر تحديث الطلب.', 'err');
     notify('تم تحديث حالة الطلب.'); setSel(null); reload();
   };
+  const reviewLink = o => `${location.origin}/ar/review/${o.review_token}`;
+  const waLink = o => `https://wa.me/${waNumber(o.customer.phone)}?text=${encodeURIComponent(`أهلاً ${o.customer.name.split(' ')[0]}، شكرًا لثقتك في ROVEN 🖤\nيهمنا رأيك في تجربتك، ممكن تقيّم من هنا:\n${reviewLink(o)}`)}`;
+  const copy = text => navigator.clipboard.writeText(text).then(() => notify('تم نسخ الرابط.')).catch(() => notify('تعذر النسخ.', 'err'));
   const receipt = async path => {
     const { data } = await supabase.storage.from('receipts').createSignedUrl(path, 120);
     if (data?.signedUrl) window.open(data.signedUrl, '_blank', 'noopener'); else notify('تعذر فتح الإيصال.', 'err');
@@ -37,6 +42,11 @@ export default function Orders({ orders, reload, notify }) {
         {sel.discount > 0 && <><span>الخصم{sel.coupon ? ` (${sel.coupon})` : ''}</span><b>- {money(sel.discount)}</b></>}
         <span>الشحن</span><b>{money(sel.shipping)}</b><span>الإجمالي</span><b>{money(sel.total)}</b></div>
       {sel.receipt && <button className="ad-btn wide" onClick={() => receipt(sel.receipt)}>عرض إيصال التحويل</button>}
+      <div className="ad-review"><h4>طلب تقييم من العميل</h4>
+        {['shipped', 'delivered'].includes(sel.status) ? <><p className="ad-dim">ابعت الرابط للعميل على واتساب. بيفتح له صفحة تقييم مرتبطة بطلبه هو بس.</p>
+          <div className="ad-acts"><a className="ad-btn primary" href={waLink(sel)} target="_blank" rel="noopener noreferrer">إرسال على واتساب</a>
+            <button className="ad-btn" onClick={() => copy(reviewLink(sel))}>نسخ الرابط</button></div></>
+          : <p className="ad-dim">رابط التقييم بيشتغل بعد ما تغيّر حالة الطلب إلى "تم الشحن" أو "تم التسليم".</p>}</div>
       <label className="ad-fld"><span>حالة الطلب</span><select value={status} onChange={e => setStatus(e.target.value)}>{Object.entries(ST).map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}</select></label>
     </Modal>}
   </>);

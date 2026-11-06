@@ -77,8 +77,8 @@ export default function Admin() {
         {tab === 'orders' && <Orders orders={orders} reload={loadOrders} notify={notify} />}
         {tab === 'coupons' && <Coupons notify={notify} />}
         {tab === 'products' && <Products notify={notify} />}
-        {tab === 'categories' && <Taxonomy key="c" table="categories" title="الأصناف" one="صنف" notify={notify} />}
-        {tab === 'collections' && <Taxonomy key="k" table="collections" title="الكوليكشنات" one="كوليكشن" rich notify={notify} />}
+        {tab === 'categories' && <Taxonomy key="c" table="categories" title="الأصناف" one="صنف" sub="الصنف هو نوع القطعة، مثل: هوديز، بنطلونات، سويت شيرتس. العميل بيفلتر بيه في المتجر." notify={notify} />}
+        {tab === 'collections' && <Taxonomy key="k" table="collections" title="الكوليكشنات" one="كوليكشن" sub="الكوليكشن مجموعة قطع بموضوع واحد، مثل: شتاء 2026 أو الإصدار الأسود. بتظهر في الصفحة الرئيسية بغلاف، وليها صفحة خاصة. القطعة ممكن تكون في صنف وكوليكشن مع بعض." rich notify={notify} />}
         {tab === 'reviews' && <Reviews notify={notify} />}
         {tab === 'settings' && <Settings notify={notify} />}
       </div>

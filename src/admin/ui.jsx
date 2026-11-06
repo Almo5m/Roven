@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 /* Shared building blocks for the Arabic dashboard: modal, confirm dialog, field, pill, icons, formatters. */
 export const money = n => `${Number(n || 0).toLocaleString('ar-EG')} ج.م`;
 export const fmtDate = d => new Date(d).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' });
@@ -34,3 +34,23 @@ const PATHS = {
   menu: 'M4 7h16M4 12h16M4 17h16', out: 'M10 4H5v16h5M16 8l4 4-4 4M20 12H9',
 };
 export const Icon = ({ n, size = 20 }) => <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={PATHS[n]} /></svg>;
+
+/* Link name made automatically from the English name, so the owner never has to think about it. */
+export const makeSlug = (name, taken = []) => {
+  let base = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 28);
+  if (base.length < 2) base = 'item';
+  let s = base, n = 2; while (taken.includes(s)) s = `${base}-${n++}`; return s;
+};
+
+/* A list of short values (sizes, colours): type, press add, remove with the x. `suggest` is a row of one-tap shortcuts. */
+export function TagInput({ value, onChange, placeholder, suggest = [], label = x => x }) {
+  const [t, setT] = useState('');
+  const add = v => { v = String(v).trim(); if (v && !value.includes(v)) onChange([...value, v]); setT(''); };
+  return (<div className="ad-tags">
+    {value.length > 0 && <div className="ad-taglist">{value.map(x => <span key={x}>{label(x)}<button type="button" onClick={() => onChange(value.filter(y => y !== x))} aria-label="حذف">×</button></span>)}</div>}
+    <div className="ad-tagadd"><input value={t} placeholder={placeholder} onChange={e => setT(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(t); } }} />
+      <button type="button" className="ad-btn" onClick={() => add(t)}>إضافة</button></div>
+    {suggest.filter(([, v]) => !value.includes(v)).length > 0 && <div className="ad-sugg"><small className="ad-dim">اختصارات:</small>
+      {suggest.filter(([, v]) => !value.includes(v)).map(([l, v]) => <button type="button" key={v} onClick={() => add(v)}>+ {l}</button>)}</div>}
+  </div>);
+}
