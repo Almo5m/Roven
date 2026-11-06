@@ -11,6 +11,7 @@
 ## What you must do
 1. **Set the real address.** Vercel > Settings > Environment Variables: `VITE_SITE_URL` = your final address with `https://` and no slash at the end (for example `https://roven.com`). Redeploy. If you later move from the vercel.app address to your own domain, change it and redeploy.
 2. **Google Search Console** (search.google.com/search-console): add your site. For the "URL prefix" method pick the HTML tag option, copy only the `content` value into a Vercel variable `VITE_GOOGLE_VERIFICATION`, redeploy, then press Verify. Then open Sitemaps and submit `sitemap.xml`.
+   If you verified with the HTML file method instead, the file `public/google6e72f750e98b89d2.html` is already in the project. Keep it there, because Google re-checks it from time to time.
 3. Check a link preview with the Facebook Sharing Debugger (developers.facebook.com/tools/debug). WhatsApp keeps old previews for a while, so a changed image can take days to refresh.
 4. Test a product page with Google's Rich Results Test (search.google.com/test/rich-results).
 
