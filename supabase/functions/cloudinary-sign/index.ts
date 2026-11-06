@@ -12,6 +12,8 @@ Deno.serve(async req => {
   const { data: admin } = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
   if (!admin) return json({ error: 'forbidden' }, 403);
 
+  if (!Deno.env.get('CLOUDINARY_API_SECRET') || !Deno.env.get('CLOUDINARY_API_KEY') || !Deno.env.get('CLOUDINARY_CLOUD_NAME')) return json({ error: 'missing_secrets' }, 500);
+
   const timestamp = Math.floor(Date.now() / 1000), folder = 'roven/products', allowed_formats = 'jpg,png,webp';
   const toSign = `allowed_formats=${allowed_formats}&folder=${folder}&timestamp=${timestamp}${Deno.env.get('CLOUDINARY_API_SECRET')}`;
   const hash = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(toSign));

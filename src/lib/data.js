@@ -7,9 +7,9 @@ const FALLBACK = { drop_date: '', faq: [], transfer_methods: [], announcement_en
 const toItems = cart => cart.map(l => ({ product_id: l.id, size: l.size, color: l.color }));
 
 export async function loadProducts() {
-  if (!supabase) return DEMO;
+  if (!supabase) return DEMO; // only when running locally without Supabase keys
   const { data, error } = await supabase.from('products').select('id,name_en,name_ar,price,sizes,colors,images,stock,category,collections,description_en,description_ar,featured').eq('active', true).order('sort');
-  return error || !data?.length ? DEMO : data;
+  return error ? [] : data || []; // a real store never shows placeholder products
 }
 export async function loadSettings() {
   if (!supabase) return FALLBACK;

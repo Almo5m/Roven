@@ -28,7 +28,11 @@ export default function Settings({ notify }) {
   const set = k => e => setF({ ...f, [k]: e.target.value });
   const addLook = async e => {
     const files = [...e.target.files]; e.target.value = ''; setBusy(true); setErr('');
-    for (const file of files) { if (look.length >= 8) break; const url = await uploadImage(file); if (!url) { setErr('فشل رفع صورة. استخدم JPG أو PNG أو WebP أقل من 3 ميجا.'); break; } setLook(x => [...x, url]); }
+    let count = look.length;
+    for (const file of files) {
+      if (count >= 8) { setErr('الحد الأقصى ٨ صور.'); break; }
+      try { const url = await uploadImage(file); count++; setLook(x => [...x, url]); } catch (e2) { setErr(e2.message); break; }
+    }
     setBusy(false);
   };
   const save = async () => {

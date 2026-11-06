@@ -8,5 +8,5 @@ export default function Shop({ t, lang, products, catalog, cat }) {
   return (<section className="wrap"><h1 className="ptitle">{cur ? nm(cur, lang) : t.shop}</h1>
     <div className="opts tabs"><a href={to('/shop')} className={'chip' + (!cur ? ' on' : '')}>{t.cat_all}</a>
       {cats.map(c => <a key={c.slug} href={to(`/shop/${c.slug}`)} className={'chip' + (cur?.slug === c.slug ? ' on' : '')}>{nm(c, lang)}</a>)}</div>
-    <div className="grid">{shown.map(p => <Card key={p.id} p={p} lang={lang} t={t} />)}</div></section>);
+    {shown.length ? <div className="grid">{shown.map(p => <Card key={p.id} p={p} lang={lang} t={t} />)}</div> : <p className="dim">{t.noProducts}</p>}</section>);
 }

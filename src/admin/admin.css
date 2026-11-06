@@ -134,3 +134,7 @@ border-radius:8px;font:600 .95rem 'Readex Pro',sans-serif;cursor:pointer;text-de
 .ad-link{background:none;border:0;color:#ff9a9a;font:inherit;font-size:.82rem;cursor:pointer;text-decoration:underline;padding:6px 0}
 .ad-review{border:1px solid var(--line-2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2)}
 .ad-panel h3{margin-top:4px}
+
+/* visit statistics */
+.ad-rank{display:flex;flex-direction:column;gap:12px}.ad-rank>div{display:flex;flex-direction:column;gap:6px}.ad-rank i{display:block;height:6px;border-radius:3px;background:linear-gradient(90deg,#fff,#6e7487)}
+.ad-rank span{overflow-wrap:anywhere}

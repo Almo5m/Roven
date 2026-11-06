@@ -7,11 +7,12 @@ import Taxonomy from './Taxonomy.jsx';
 import Coupons from './Coupons.jsx';
 import Reviews from './Reviews.jsx';
 import Settings from './Settings.jsx';
+import Visits from './Visits.jsx';
 import { Icon } from './ui.jsx';
 import './admin.css';
 
 const NAV = [
-  ['المبيعات', [['dash', 'نظرة عامة', 'home'], ['orders', 'الطلبات', 'orders'], ['coupons', 'أكواد الخصم', 'coupons']]],
+  ['المبيعات', [['dash', 'نظرة عامة', 'home'], ['visits', 'الزيارات', 'chart'], ['orders', 'الطلبات', 'orders'], ['coupons', 'أكواد الخصم', 'coupons']]],
   ['الكتالوج', [['products', 'المنتجات', 'products'], ['categories', 'الأصناف', 'categories'], ['collections', 'الكوليكشنات', 'collections']]],
   ['الموقع', [['reviews', 'آراء العملاء', 'reviews'], ['settings', 'الإعدادات', 'settings']]],
 ];
@@ -37,7 +38,7 @@ export default function Admin() {
     setOrders(data || []);
   }, []);
   useEffect(() => { check(); }, [check]);
-  useEffect(() => { if (state !== 'ok') return; loadOrders(); const i = setInterval(loadOrders, 60000); return () => clearInterval(i); }, [state, loadOrders]);
+  useEffect(() => { if (state !== 'ok') return; try { localStorage.setItem('roven-no-track', '1'); } catch { /* blocked storage is fine */ } loadOrders(); const i = setInterval(loadOrders, 60000); return () => clearInterval(i); }, [state, loadOrders]);
 
   const login = async e => {
     e.preventDefault(); setErr('');
@@ -74,6 +75,7 @@ export default function Admin() {
       <div className="ad-top"><button className="ad-icon" onClick={() => setNav(true)} aria-label="القائمة"><Icon n="menu" size={24} /></button><strong>{TITLES[tab]}</strong><span /></div>
       <div className="ad-body">
         {tab === 'dash' && <Dashboard orders={orders} go={go} />}
+        {tab === 'visits' && <Visits notify={notify} />}
         {tab === 'orders' && <Orders orders={orders} reload={loadOrders} notify={notify} />}
         {tab === 'coupons' && <Coupons notify={notify} />}
         {tab === 'products' && <Products notify={notify} />}

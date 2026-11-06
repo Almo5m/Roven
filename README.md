@@ -51,6 +51,9 @@ Sizes and colours are tag lists, stock is one box per size, the FAQ is a list of
 ## Search and sharing
 Clean URLs (`/shop`, `/p/...`, Arabic under `/ar`), per-page titles and descriptions, the ROVEN social preview image, structured data, a live sitemap and robots file. Steps for Google Search Console are in `docs/SEO.md`.
 
+## Launch
+Checklist before handing over to the client: `docs/LAUNCH-CHECKLIST.md`. Visit statistics are counted on my own Supabase database and shown in the dashboard under الزيارات (run `supabase/09_visits.sql`). No third-party tracker.
+
 ## Next
 Online payment gateway once registered, order notifications (email or WhatsApp), security review, launch.
 

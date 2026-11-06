@@ -12,9 +12,9 @@ export default function Taxonomy({ table, title, one, rich, sub, notify }) {
   const set = k => e => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
   const pick = async e => {
     const file = e.target.files[0]; e.target.value = ''; if (!file) return;
-    setBusy(true); const url = await uploadImage(file); setBusy(false);
-    if (!url) return setErr('فشل رفع الصورة. استخدم JPG أو PNG أو WebP أقل من 3 ميجا.');
-    setErr(''); setF(x => ({ ...x, image: url }));
+    setBusy(true); setErr('');
+    try { const url = await uploadImage(file); setF(x => ({ ...x, image: url })); } catch (e2) { setErr(e2.message); }
+    setBusy(false);
   };
   const save = async () => {
     if (!f.name_en.trim() || !f.name_ar.trim()) return setErr('اكتب الاسمين بالعربي والإنجليزي.');

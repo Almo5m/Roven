@@ -27,11 +27,11 @@ export default function Products({ notify }) {
   const upload = async e => {
     const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
     setBusy(true); setErr('');
+    let count = f.images.length;
     for (const file of files) {
-      if (f.images.length >= 8) break;
-      const url = await uploadImage(file);
-      if (!url) { setErr('فشل رفع صورة. استخدم JPG أو PNG أو WebP أقل من 3 ميجا.'); break; }
-      setF(x => ({ ...x, images: [...x.images, url] }));
+      if (count >= 8) { setErr('الحد الأقصى ٨ صور.'); break; }
+      try { const url = await uploadImage(file); count++; setF(x => ({ ...x, images: [...x.images, url] })); }
+      catch (e2) { setErr(e2.message); break; }
     }
     setBusy(false);
   };

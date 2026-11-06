@@ -5,6 +5,7 @@ import { reveal } from './lib/reveal.js';
 import { catsOf } from './lib/catalog.js';
 import { buildMeta, route } from './lib/seo-core.js';
 import { applySeo } from './lib/seo.js';
+import { trackView } from './lib/track.js';
 import { LangContext, navigate, usePath, useLinkClicks, stripLang, langOf, withLang } from './lib/router.js';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -39,6 +40,7 @@ export default function App() {
   }, []);
   useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; }, [lang]);
   useEffect(() => { reveal(); });
+  useEffect(() => { trackView(rest, lang, r.page); }, [path]);
   useEffect(() => {
     const ok = u => typeof u === 'string' && u.startsWith('https://');
     applySeo(buildMeta({ site: __SITE_URL__, lang, rest, data: { loaded: ready, faq: settings.faq, social: [settings.instagram, settings.tiktok].filter(ok),

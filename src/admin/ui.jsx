@@ -4,15 +4,19 @@ export const money = n => `${Number(n || 0).toLocaleString('ar-EG')} ج.م`;
 export const fmtDate = d => new Date(d).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' });
 
 export function Modal({ title, onClose, children, footer, wide }) {
-  const ref = useRef(null);
+  const ref = useRef(null), close = useRef(onClose);
+  close.current = onClose; // always the latest handler, without re-running the effect below
   useEffect(() => {
-    const k = e => e.key === 'Escape' && onClose();
+    // Runs once when the dialog opens. It must not depend on onClose: that is a new function on every
+    // render, and re-running this effect moved focus to the dialog after each typed letter (the phone keyboard closed).
+    const k = e => e.key === 'Escape' && close.current();
+    const prev = document.body.style.overflow;
     addEventListener('keydown', k); document.body.style.overflow = 'hidden'; ref.current?.focus();
-    return () => { removeEventListener('keydown', k); document.body.style.overflow = ''; };
-  }, [onClose]);
-  return (<div className="ad-back" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+    return () => { removeEventListener('keydown', k); document.body.style.overflow = prev; };
+  }, []);
+  return (<div className="ad-back" onMouseDown={e => e.target === e.currentTarget && close.current()}>
     <div className={'ad-md' + (wide ? ' wide' : '')} role="dialog" aria-modal="true" aria-label={title} ref={ref} tabIndex={-1}>
-      <header><h3>{title}</h3><button className="ad-x" onClick={onClose} aria-label="إغلاق">×</button></header>
+      <header><h3>{title}</h3><button className="ad-x" onClick={() => close.current()} aria-label="إغلاق">×</button></header>
       <div className="ad-mbody">{children}</div>
       {footer && <footer>{footer}</footer>}
     </div></div>);
@@ -31,7 +35,7 @@ const PATHS = {
   products: 'M8 3l-5 4 3 3 2-1v12h8V9l2 1 3-3-5-4a4 4 0 01-8 0z', categories: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   collections: 'M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5', coupons: 'M3 12V4h8l10 10-8 8L3 12zM7.5 8.5h.01',
   reviews: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z', settings: 'M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M14 4v4M8 10v4M16 16v4',
-  menu: 'M4 7h16M4 12h16M4 17h16', out: 'M10 4H5v16h5M16 8l4 4-4 4M20 12H9',
+  menu: 'M4 7h16M4 12h16M4 17h16', chart: 'M4 20V10M10 20V4M16 20v-8M22 20H2', out: 'M10 4H5v16h5M16 8l4 4-4 4M20 12H9',
 };
 export const Icon = ({ n, size = 20 }) => <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={PATHS[n]} /></svg>;
 

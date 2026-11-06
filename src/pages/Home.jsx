@@ -59,7 +59,7 @@ export default function Home({ t, lang, products, catalog, settings, testimonial
           <span>{nm(c, lang)}<i className="arr">→</i></span></a>); })}</div></section>
 
     <section className="wrap"><div className="head rv"><h2>{t.featured}</h2><a className="more" href={to('/shop')}>{t.viewAll}<i className="arr">→</i></a></div>
-      <div className="grid">{shown.map(p => <Card key={p.id} p={p} lang={lang} t={t} />)}</div></section>
+      {shown.length ? <div className="grid">{shown.map(p => <Card key={p.id} p={p} lang={lang} t={t} />)}</div> : <p className="dim">{t.noProducts}</p>}</section>
 
     {look.length > 0 && <section className="wrap" id="lookbook"><div className="head rv"><h2>{t.lookbook}</h2></div>
       <div className="strip">{look.map(u => <img key={u} src={opt(u, 800)} alt="" loading="lazy" />)}</div></section>}
