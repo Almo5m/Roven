@@ -15,7 +15,7 @@ export default function Orders({ orders, reload, notify }) {
   const save = async () => {
     setBusy(true); const { error } = await supabase.from('orders').update({ status }).eq('id', sel.id); setBusy(false);
     if (error) return notify('تعذر تحديث الطلب.', 'err');
-    notify('تم تحديث حالة الطلب.'); setSel(null); reload();
+    notify('تم تحديث حالة الطلب.'); setSel({ ...sel, status }); reload(); // stay open: the review link appears once the order is shipped
   };
   const reviewLink = o => `${location.origin}/ar/review/${o.review_token}`;
   const waLink = o => `https://wa.me/${waNumber(o.customer.phone)}?text=${encodeURIComponent(`أهلاً ${o.customer.name.split(' ')[0]}، شكرًا لثقتك في ROVEN 🖤\nيهمنا رأيك في تجربتك، ممكن تقيّم من هنا:\n${reviewLink(o)}`)}`;
@@ -48,7 +48,7 @@ export default function Orders({ orders, reload, notify }) {
         {['shipped', 'delivered'].includes(sel.status) ? <><p className="ad-dim">ابعت الرابط للعميل على واتساب. بيفتح له صفحة تقييم مرتبطة بطلبه هو بس.</p>
           <div className="ad-acts"><a className="ad-btn primary" href={waLink(sel)} target="_blank" rel="noopener noreferrer">إرسال على واتساب</a>
             <button className="ad-btn" onClick={() => copy(reviewLink(sel))}>نسخ الرابط</button></div></>
-          : <p className="ad-dim">رابط التقييم بيشتغل بعد ما تغيّر حالة الطلب إلى "تم الشحن" أو "تم التسليم".</p>}</div>
+          : <p className="ad-dim">رابط التقييم بيشتغل بعد تغيير حالة الطلب إلى "تم الشحن" أو "تم التسليم". اختار الحالة من القايمة تحت واضغط "حفظ الحالة"، وهيظهر زر الإرسال هنا.</p>}</div>
       <label className="ad-fld"><span>حالة الطلب</span><select value={status} onChange={e => setStatus(e.target.value)}>{Object.entries(ST).map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}</select></label>
     </Modal>}
   </>);

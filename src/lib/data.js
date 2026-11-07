@@ -64,7 +64,8 @@ export async function loadCatalog() {
 /* Review links: the token belongs to one order, the server checks it. */
 export async function reviewRequest(token) {
   if (!supabase) return null;
-  const { data } = await supabase.rpc('get_review_request', { p_token: token });
+  const { data, error } = await supabase.rpc('get_review_request', { p_token: token });
+  if (error) return { state: 'error' }; // the database function is missing or failed: not the same as a bad link
   return data || null;
 }
 export async function submitReview(token, rating, text, name) {
