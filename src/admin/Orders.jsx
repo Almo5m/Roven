@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { Modal, Pill, PageHead, Empty, money, fmtDate } from './ui.jsx';
 export const ST = { new: ['جديد', 'blue'], awaiting_payment: ['في انتظار الدفع', 'amber'], confirmed: ['مؤكد', 'green'], shipped: ['تم الشحن', 'violet'], delivered: ['تم التسليم', 'gray'], cancelled: ['ملغي', 'red'] };
@@ -8,6 +8,8 @@ const waNumber = p => { const d = String(p).replace(/\D/g, ''); return d.startsW
 
 export default function Orders({ orders, reload, notify }) {
   const [filter, setFilter] = useState('all'), [sel, setSel] = useState(null), [status, setStatus] = useState(''), [busy, setBusy] = useState(false);
+  const [names, setNames] = useState({});
+  useEffect(() => { supabase.from('products').select('id,name_ar').then(({ data }) => setNames(Object.fromEntries((data || []).map(p => [p.id, p.name_ar])))); }, []);
   const shown = filter === 'all' ? orders : orders.filter(o => o.status === filter);
   const open = o => { setSel(o); setStatus(o.status); };
   const save = async () => {
@@ -37,7 +39,7 @@ export default function Orders({ orders, reload, notify }) {
         <span>الموبايل</span><a href={`tel:${sel.customer.phone}`} dir="ltr">{sel.customer.phone}</a>
         <span>العنوان</span><b>{sel.customer.city}، {sel.customer.address}</b>
         <span>الدفع</span><b>{ME[sel.method]}</b><span>التاريخ</span><b>{fmtDate(sel.created_at)}</b></div>
-      <h4>القطع</h4><ul className="ad-items">{sel.items.map((it, i) => <li key={i}>{it.product_id} · {it.size} · {it.color}</li>)}</ul>
+      <h4>القطع</h4><ul className="ad-items">{sel.items.map((it, i) => <li key={i}>{names[it.product_id] || it.product_id} · {it.size} · {it.color}</li>)}</ul>
       <div className="ad-kv"><span>المجموع</span><b>{money(sel.subtotal)}</b>
         {sel.discount > 0 && <><span>الخصم{sel.coupon ? ` (${sel.coupon})` : ''}</span><b>- {money(sel.discount)}</b></>}
         <span>الشحن</span><b>{money(sel.shipping)}</b><span>الإجمالي</span><b>{money(sel.total)}</b></div>

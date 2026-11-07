@@ -14,11 +14,15 @@ export function Modal({ title, onClose, children, footer, wide }) {
     addEventListener('keydown', k); document.body.style.overflow = 'hidden'; ref.current?.focus();
     return () => { removeEventListener('keydown', k); document.body.style.overflow = prev; };
   }, []);
-  useEffect(() => { // fit the visible area: on phones the keyboard and browser bars cover part of the screen
-    const vv = window.visualViewport, el = back.current; if (!vv || !el) return;
-    const fit = () => { el.style.height = vv.height + 'px'; el.style.top = vv.offsetTop + 'px'; };
-    fit(); vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
-    return () => { vv.removeEventListener('resize', fit); vv.removeEventListener('scroll', fit); };
+  useEffect(() => { // measure the screen the visitor can really see (browser bars and the keyboard hide part of it)
+    const vv = window.visualViewport, el = back.current; if (!el) return;
+    const fit = () => {
+      const h = Math.round(vv ? vv.height : innerHeight);
+      el.style.height = h + 'px'; el.style.top = (vv ? vv.offsetTop : 0) + 'px'; el.style.setProperty('--ad-vh', h + 'px');
+    };
+    fit(); const t = vv || window;
+    t.addEventListener('resize', fit); vv?.addEventListener('scroll', fit);
+    return () => { t.removeEventListener('resize', fit); vv?.removeEventListener('scroll', fit); };
   }, []);
   return (<div className="ad-back" ref={back} onMouseDown={e => e.target === e.currentTarget && close.current()}>
     <div className={'ad-md' + (wide ? ' wide' : '')} role="dialog" aria-modal="true" aria-label={title} ref={ref} tabIndex={-1}>
