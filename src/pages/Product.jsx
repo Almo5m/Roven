@@ -10,7 +10,7 @@ export default function Product({ t, lang, products, add, id, settings }) {
   const chosen = color || p.colors[0], imgs = p.images || [], desc = p['description_' + lang], free = Number(settings.free_shipping_over) || 0;
   const go = () => {
     if (!size) return setMsg(t.pickSize);
-    add({ id: p.id, name: p['name_' + lang], price: p.price, size, color: chosen }); navigate(to('/cart'));
+    add({ id: p.id, name_ar: p.name_ar, name_en: p.name_en, price: p.price, size, color: chosen, image: p.images?.[0] || '' }); navigate(to('/cart'));
   };
   return (<section className="pdp">
     <div className="gallery">

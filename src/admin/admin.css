@@ -80,16 +80,16 @@ border-radius:8px;font:600 .95rem 'Readex Pro',sans-serif;cursor:pointer;text-de
 .ad-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .ad-checks{display:flex;gap:18px;flex-wrap:wrap}.ad-chk{display:flex;align-items:center;gap:10px;cursor:pointer;min-height:36px}
 .ad-form{gap:16px}
-.ad-savebar{position:sticky;bottom:0;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 0;background:linear-gradient(transparent,var(--bg) 40%)}
+.ad-savebar{position:sticky;bottom:0;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 40%)}
 
 /* modal: centred on desktop, bottom sheet on phones */
-.ad-back{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.65);backdrop-filter:blur(3px);display:grid;place-items:center;padding:20px;animation:ad-fade .2s}
-.ad-md{background:var(--panel);border:1px solid var(--line-2);border-radius:16px;width:100%;max-width:560px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:ad-pop .25s}
+.ad-back{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:100;background:rgba(0,0,0,.65);backdrop-filter:blur(3px);display:grid;place-items:center;padding:20px;animation:ad-fade .2s}
+.ad-md{background:var(--panel);border:1px solid var(--line-2);border-radius:16px;width:100%;max-width:560px;max-height:calc(100% - 40px);display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:ad-pop .25s}
 .ad-md.wide{max-width:780px}.ad-md:focus{outline:0}
 .ad-md>header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}.ad-md>header h3{font-size:1.15rem}
 .ad-x{width:40px;height:40px;border-radius:20px;border:0;background:rgba(255,255,255,.08);color:#fff;font-size:1.4rem;cursor:pointer;line-height:1}.ad-x:hover{background:rgba(255,255,255,.18)}
-.ad-mbody{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}.ad-mbody h4{font-size:.95rem;color:#fff;padding-top:6px;border-top:1px solid var(--line)}.ad-mbody h4:first-child{border:0;padding:0}
-.ad-md>footer{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}.ad-start{margin-inline-end:auto}
+.ad-mbody{padding:20px;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:16px}.ad-mbody h4{font-size:.95rem;color:#fff;padding-top:6px;border-top:1px solid var(--line)}.ad-mbody h4:first-child{border:0;padding:0}
+.ad-md>footer{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}.ad-start{margin-inline-end:auto}
 .ad-kv{display:grid;grid-template-columns:auto 1fr;gap:8px 20px}.ad-kv span{color:var(--dim)}.ad-items{list-style:none;display:flex;flex-direction:column;gap:6px}.ad-items li{background:var(--panel-2);border-radius:8px;padding:10px 14px}
 @keyframes ad-fade{from{opacity:0}}@keyframes ad-pop{from{opacity:0;transform:translateY(14px) scale(.98)}}
 .ad-toast{position:fixed;bottom:24px;inset-inline:0;margin:auto;width:fit-content;max-width:90vw;z-index:200;background:#fff;color:#000;padding:12px 22px;border-radius:24px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:ad-pop .25s}
@@ -108,7 +108,7 @@ border-radius:8px;font:600 .95rem 'Readex Pro',sans-serif;cursor:pointer;text-de
   .c-name{grid-area:name}.c-st{grid-area:st;justify-self:end}.c-trk{grid-area:trk}.c-total{grid-area:total;justify-self:end}.c-method{grid-area:method}.c-date{grid-area:date;justify-self:end}
   .ad-grid{grid-template-columns:repeat(2,1fr);gap:10px}.ad-pcard{padding:10px}
   .ad-back{place-items:end center;padding:0}
-  .ad-md,.ad-md.wide{max-width:none;border-radius:18px 18px 0 0;max-height:92vh;animation:ad-sheet .28s}
+  .ad-md,.ad-md.wide{max-width:none;border-radius:18px 18px 0 0;max-height:calc(100% - 8px);animation:ad-sheet .28s}
   .ad-md>footer{flex-wrap:wrap}.ad-md>footer .ad-btn{flex:1}
   .ad-start{margin-inline-end:0;flex-basis:100%}
   .ad-line{gap:8px 12px}.ad-line .ad-acts{width:100%;margin:0}.ad-line .ad-acts .ad-btn{flex:1}

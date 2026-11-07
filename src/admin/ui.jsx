@@ -4,7 +4,7 @@ export const money = n => `${Number(n || 0).toLocaleString('ar-EG')} ج.م`;
 export const fmtDate = d => new Date(d).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' });
 
 export function Modal({ title, onClose, children, footer, wide }) {
-  const ref = useRef(null), close = useRef(onClose);
+  const ref = useRef(null), back = useRef(null), close = useRef(onClose);
   close.current = onClose; // always the latest handler, without re-running the effect below
   useEffect(() => {
     // Runs once when the dialog opens. It must not depend on onClose: that is a new function on every
@@ -14,7 +14,13 @@ export function Modal({ title, onClose, children, footer, wide }) {
     addEventListener('keydown', k); document.body.style.overflow = 'hidden'; ref.current?.focus();
     return () => { removeEventListener('keydown', k); document.body.style.overflow = prev; };
   }, []);
-  return (<div className="ad-back" onMouseDown={e => e.target === e.currentTarget && close.current()}>
+  useEffect(() => { // fit the visible area: on phones the keyboard and browser bars cover part of the screen
+    const vv = window.visualViewport, el = back.current; if (!vv || !el) return;
+    const fit = () => { el.style.height = vv.height + 'px'; el.style.top = vv.offsetTop + 'px'; };
+    fit(); vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
+    return () => { vv.removeEventListener('resize', fit); vv.removeEventListener('scroll', fit); };
+  }, []);
+  return (<div className="ad-back" ref={back} onMouseDown={e => e.target === e.currentTarget && close.current()}>
     <div className={'ad-md' + (wide ? ' wide' : '')} role="dialog" aria-modal="true" aria-label={title} ref={ref} tabIndex={-1}>
       <header><h3>{title}</h3><button className="ad-x" onClick={() => close.current()} aria-label="إغلاق">×</button></header>
       <div className="ad-mbody">{children}</div>

@@ -26,7 +26,7 @@ const pref = () => { try { return localStorage.getItem('roven-lang'); } catch { 
 
 export default function App() {
   const path = usePath(), lang = langOf(path), rest = stripLang(path), r = route(rest), t = T[lang];
-  const [products, setProducts] = useState([]), [cart, setCart] = useState([]), [settings, setSettings] = useState(DEFAULTS), [testimonials, setTestimonials] = useState([]);
+  const [products, setProducts] = useState([]), [cart, setCart] = useState(() => { try { const c = JSON.parse(localStorage.getItem('roven-cart') || '[]'); return Array.isArray(c) ? c.filter(l => l && typeof l.id === 'string' && typeof l.size === 'string').slice(0, 20) : []; } catch { return []; } }), [settings, setSettings] = useState(DEFAULTS), [testimonials, setTestimonials] = useState([]);
   const [catalog, setCatalog] = useState({ categories: [], collections: [] }), [ready, setReady] = useState(false);
   useLinkClicks();
 
@@ -40,6 +40,7 @@ export default function App() {
   }, []);
   useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; }, [lang]);
   useEffect(() => { reveal(); });
+  useEffect(() => { try { localStorage.setItem('roven-cart', JSON.stringify(cart)); } catch { /* blocked storage is fine */ } }, [cart]);
   useEffect(() => { trackView(rest, lang, r.page); }, [path]);
   useEffect(() => {
     const ok = u => typeof u === 'string' && u.startsWith('https://');

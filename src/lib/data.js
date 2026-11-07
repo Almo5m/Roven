@@ -27,9 +27,9 @@ export async function quote(cart, coupon, settings) {
   return error ? { error: true } : data;
 }
 export async function placeOrder(customer, cart, method, coupon) {
-  if (!supabase) return { ok: true, tracking: 'RV-DEMO0001' };
+  if (!supabase) return { ok: true, tracking: 'RV-DEMO0001', total: 0 };
   const { data, error } = await supabase.rpc('create_order', { p_customer: customer, p_items: toItems(cart), p_method: method, p_coupon: coupon || null });
-  return { ok: !error, tracking: data?.tracking };
+  return { ok: !error, tracking: data?.tracking, total: data?.total, reason: error?.message };
 }
 export async function trackOrder(code, phone) {
   if (!supabase) return null;

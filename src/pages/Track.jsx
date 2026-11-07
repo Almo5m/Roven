@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { trackOrder, uploadReceipt } from '../lib/data.js';
+import { normPhone } from '../lib/phone.js';
 export default function Track({ t }) {
   const [code, setCode] = useState(''), [phone, setPhone] = useState(''), [r, setR] = useState(undefined), [busy, setBusy] = useState(false);
   const [file, setFile] = useState(null), [rmsg, setRmsg] = useState('');
-  const go = async e => { e.preventDefault(); setBusy(true); setRmsg(''); setR(await trackOrder(code, phone)); setBusy(false); };
+  const go = async e => { e.preventDefault(); setBusy(true); setRmsg(''); setR(await trackOrder(code, normPhone(phone))); setBusy(false); };
   const send = async () => {
-    setBusy(true); const ok = await uploadReceipt(code, phone, file);
-    setRmsg(ok ? 'ok' : 'err'); if (ok) setR(await trackOrder(code, phone)); setBusy(false);
+    setBusy(true); const ok = await uploadReceipt(code, normPhone(phone), file);
+    setRmsg(ok ? 'ok' : 'err'); if (ok) setR(await trackOrder(code, normPhone(phone))); setBusy(false);
   };
   return (<section className="page"><h1 className="ptitle">{t.track}</h1>
     <form className="fcol" onSubmit={go}>

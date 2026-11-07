@@ -8,7 +8,7 @@ This page explains what the ROVEN website collects and why. Before launch, fill 
 - **If you pay by transfer:** the receipt image you upload, so we can confirm your payment.
 - **If you leave a review:** the rating, the text, and the name you choose to show. Reviews appear on the site only after we approve them.
 - **Visit statistics:** we count visits on our own database: which page, the page language, the device type (mobile, tablet or computer), your country (taken from the request, not stored together with your IP address), and which website you came from. A random code identifies your visit only while the browser tab is open. We store no name and no IP address with these counts, and we do not count you if your browser sends "Do Not Track".
-- **Your language choice,** saved in your own browser and never sent to us.
+- **Your language choice and your cart,** saved in your own browser and never sent to us until you place an order.
 
 ## Who handles the data
 - Orders, receipts, reviews and visit counts are stored in Supabase.
